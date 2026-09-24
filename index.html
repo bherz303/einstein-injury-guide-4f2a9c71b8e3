@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internal Tool</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#EF8B22; --gray:#53575A; --blue:#0979C3; --dark:#27343D;
+  --light:#F6F6F6; --white:#fff; --success:#69995d; --error:#CC0100;
+  --bg:#F6F6F6; --surface:#fff; --ink:#53575A; --ink-strong:#27343D;
+  --rule:#e3e4e6; --muted:#7c8084; --shadow:0 1px 3px rgba(39,52,61,.08),0 8px 24px rgba(39,52,61,.06);
+  --crit-bg:#fdf2f2; --crit-rule:#CC0100;
+  --minor-bg:#fff8ef; --minor-rule:#EF8B22;
+  --open-bg:#f0f6fb; --open-rule:#0979C3;
+}
+:root:not([data-theme="light"]) { }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b242b; --surface:#232f37; --ink:#d4d8db; --ink-strong:#f2f4f5;
+    --rule:#36444e; --muted:#9aa3a9; --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+    --crit-bg:#3a2326; --crit-rule:#ef5350;
+    --minor-bg:#3a2f20; --minor-rule:#EF8B22;
+    --open-bg:#1e2f3c; --open-rule:#4da3e0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b242b; --surface:#232f37; --ink:#d4d8db; --ink-strong:#f2f4f5;
+  --rule:#36444e; --muted:#9aa3a9; --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  --crit-bg:#3a2326; --crit-rule:#ef5350;
+  --minor-bg:#3a2f20; --minor-rule:#EF8B22;
+  --open-bg:#1e2f3c; --open-rule:#4da3e0;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:17px;line-height:1.6;margin:0;padding:0}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px 80px}
+h1,h2,h3,h4{color:var(--ink-strong);font-weight:700;line-height:1.2}
+a{color:var(--blue)}
+code{background:var(--light);padding:1px 5px;border-radius:3px;font-size:.92em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) code{background:#2c3a44}}
+:root[data-theme="dark"] code{background:#2c3a44}
+
+/* hero */
+header.hero{background:var(--dark);color:#fff;padding:44px 0 36px;margin-bottom:34px}
+header.hero .wrap{padding-bottom:0}
+.eyebrow{font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.14em;font-size:15px;
+  color:var(--orange);margin:0 0 10px}
+header.hero h1{font-family:'Bebas Neue',Impact,sans-serif;font-size:52px;letter-spacing:.01em;
+  color:#fff;margin:0 0 12px;line-height:1.03}
+header.hero p{margin:0;color:#c3cad0;font-size:19px;max-width:60ch}
+.stamp{margin-top:20px;padding-top:16px;border-top:2px solid var(--orange);
+  font-size:15px;color:#e2e7ea}
+.stamp b{color:#fff}
+
+/* blocks */
+section{margin:0 0 42px}
+h2{font-size:29px;margin:0 0 6px;padding-top:10px}
+h2 .num{font-family:'Bebas Neue',Impact,sans-serif;color:var(--orange);margin-right:10px;font-size:32px}
+.lede{color:var(--muted);margin:0 0 18px;font-size:16px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:10px;
+  padding:22px 24px;box-shadow:var(--shadow);margin:0 0 16px}
+.card h3{font-size:20px;margin:0 0 10px}
+.card h3:not(:first-child){margin-top:22px}
+.card > :last-child{margin-bottom:0}
+
+.crit{background:var(--crit-bg);border-left:5px solid var(--crit-rule)}
+.minor{background:var(--minor-bg);border-left:5px solid var(--minor-rule)}
+.open{background:var(--open-bg);border-left:5px solid var(--open-rule)}
+.tag{display:inline-block;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.1em;
+  font-size:14px;padding:3px 10px;border-radius:4px;color:#fff;vertical-align:middle}
+.tag.c{background:var(--crit-rule)} .tag.m{background:var(--orange)}
+
+/* the one question */
+.bigq{background:var(--surface);border:2px solid var(--orange);border-radius:12px;
+  padding:26px;text-align:center;box-shadow:var(--shadow)}
+.bigq p.q{font-size:24px;font-weight:700;color:var(--ink-strong);margin:0 0 18px;line-height:1.3}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left}
+@media(max-width:620px){.split{grid-template-columns:1fr}}
+.split > div{padding:16px 18px;border-radius:8px}
+.split h4{margin:0 0 6px;font-size:17px}
+.split p{margin:0;font-size:15.5px}
+
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+ol.steps > li{counter-increment:s;position:relative;padding:0 0 18px 46px;margin:0}
+ol.steps > li::before{content:counter(s);position:absolute;left:0;top:-1px;width:30px;height:30px;
+  background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:700;font-size:15px}
+ol.steps > li:last-child{padding-bottom:0}
+ol.steps b{color:var(--ink-strong)}
+
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+tbody tr:last-child td{border-bottom:none}
+
+.ex{border-left:4px solid var(--rule);padding:2px 0 2px 18px;margin:0 0 22px}
+.ex:last-child{margin-bottom:0}
+.ex h4{margin:0 0 6px;font-size:17.5px}
+.ex p{margin:0 0 8px}
+.ex .call{font-weight:700}
+.ex .call.c{color:var(--crit-rule)} .ex .call.m{color:var(--orange)}
+
+details{border-bottom:1px solid var(--rule);padding:14px 0}
+details:last-of-type{border-bottom:none}
+summary{cursor:pointer;font-weight:700;color:var(--ink-strong);font-size:17px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";color:var(--orange);font-weight:700;margin-right:10px;display:inline-block;width:14px}
+details[open] summary::before{content:"–"}
+details > *:not(summary){margin-top:10px}
+details p:last-child{margin-bottom:0}
+
+.toc{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px 24px;margin-bottom:38px}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:32px}
+@media(max-width:620px){.toc ol{columns:1}}
+.toc li{margin:4px 0}
+.toc a{text-decoration:none}
+.toc a:hover{text-decoration:underline}
+
+.bad{color:var(--error);font-weight:700}
+.good{color:var(--success);font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bad{color:#ff8a85}
+  :root:not([data-theme="light"]) .good{color:#9ccf8f}}
+:root[data-theme="dark"] .bad{color:#ff8a85}
+:root[data-theme="dark"] .good{color:#9ccf8f}
+
+footer{border-top:2px solid var(--rule);margin-top:50px;padding-top:22px;color:var(--muted);font-size:14.5px}
+ul.tight li{margin:5px 0}
+
+@media print{
+  body{background:#fff;font-size:11pt}
+  header.hero{background:#fff;color:#000;border-bottom:3px solid var(--orange)}
+  header.hero h1,header.hero p,.stamp,.stamp b{color:#000}
+  .card{box-shadow:none;break-inside:avoid}
+  details{border:none} details > *:not(summary){display:block!important}
+  details summary::before{content:""}
+  .toc{display:none}
+  section{break-inside:avoid-page}
+}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">EINSTEIN MOVING · MANAGER REFERENCE</p>
+    <h1>Injury Reporting</h1>
+    <p>When an injury will keep someone off their next shift, it gets reported — same day, every time. What to do
+    in the first hour, what happens next, and who owns which part.</p>
+    <div class="stamp">
+      <b>Effective immediately.</b> This is the current process. Anything communicated before this — including the
+      “On the Job Injury &amp; Workers' Compensation Process” posting from 6/2/2025 — <b>is not in practice.</b><br>
+      Audience: frontline managers (BM, Ops, FM, Flex). Companion to the Delegation Board pulse
+      <i>“🚨 Injury Reporting — Updated/Current Process.”</i>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <ol>
+    <li><a href="#one-question">The one question</a></li>
+    <li><a href="#minor">Minor — the two-day path</a></li>
+    <li><a href="#critical">Critical — the same-day path</a></li>
+    <li><a href="#escalate">When Minor becomes Critical</a></li>
+    <li><a href="#form">Filling out the form</a></li>
+    <li><a href="#examples">Worked examples</a></li>
+    <li><a href="#lanes">Who owns what</a></li>
+    <li><a href="#crew">What your crew needs to know</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#dont">What not to do</a></li>
+    <li><a href="#open">Still being decided</a></li>
+  </ol>
+</nav>
+
+<section>
+  <h2><span class="num">00</span>Start here</h2>
+  <div class="card">
+    <h3>Somebody just told you they got hurt</h3>
+    <ol class="steps">
+      <li><b>Are they safe right now?</b> If it is serious — call for help first. Everything on this page can wait; that cannot.</li>
+      <li><b>Ask whether it will limit their ability to work their next shift.</b> That answer decides whether
+      there is a report at all — see the card below.</li>
+      <li><b>If yes, ask the one question in section 01</b> to land on Minor or Critical.</li>
+      <li><b>If Critical: call Anne / Employee Experience before you send them anywhere.</b> Pre-authorization is what keeps Concentra from turning them away or calling the office.</li>
+      <li><b>Fill out the form today.</b> <a href="https://wkf.ms/4bd5vEY">wkf.ms/4bd5vEY</a> — bookmark it on your desktop. You do not need the full story.</li>
+      <li><b>Tell your RM.</b> Injuries travel team → management → leadership, every time.</li>
+    </ol>
+  </div>
+  <div class="card">
+    <h3>What actually gets reported</h3>
+    <p><b>"Will this limit your ability to work your next shift?"</b> Ask it plainly, and tell them a yes means
+    you report it.</p>
+    <p><b>Yes → it gets reported.</b> <b>No → they work like normal and there is no report.</b> That is the
+    whole test.</p>
+    <p><b>This is not a "report everything" process, and it is not meant to be.</b> A report has teeth: it takes
+    the person off the schedule and puts them on leave in Rippling for two days. Filing one on someone who is
+    perfectly able to work would pull a healthy mover off the schedule, unpaid, for no reason.</p>
+    <p><b>So: a cut that takes a bandaid and no time off does not get reported.</b> Neither does a bump someone
+    shrugs off and works through. What we are trying to catch is the injury that is going to cost them a shift —
+    the one that used to go unrecorded until it turned into something bigger.</p>
+    <p style="margin-bottom:0"><b>And the other half of the deal:</b> an injury that is never mentioned the day it
+    happens does not excuse the next day's absence. <b>Hurt on the job, said nothing, then calls out for it —
+    that is still a call out.</b> Longstanding rule, unchanged, and it is what makes the same-day ask fair rather
+    than one-sided.</p>
+  </div>
+</section>
+
+<section id="one-question">
+  <h2><span class="num">01</span>The one question</h2>
+  <p class="lede">Everything downstream hangs on this. There are only two designations.</p>
+  <div class="bigq">
+    <p class="q">Does this require them to go to a medical facility <u>the day of the injury</u>?</p>
+    <div class="split">
+      <div class="minor">
+        <h4><span class="tag m">MINOR</span></h4>
+        <p><b>No.</b> Small cuts, strains, aches, bruises, bangs. Nothing that needs professional medical
+        attention or a facility visit that day.</p>
+      </div>
+      <div class="crit">
+        <h4><span class="tag c">CRITICAL</span></h4>
+        <p><b>Yes.</b> Urgent medical care needed now, or anything that puts them in a medical facility
+        on the day it happened.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <p style="margin:0"><b>Note the line is the facility visit, not how bad it looks.</b> A wrist that seems minor but
+    gets driven to Concentra that afternoon is <b>Critical</b>. That is the call that trips people up, and it is the
+    one that decides whether a workers' comp claim opens that day.</p>
+  </div>
+</section>
+
+<section id="minor">
+  <h2><span class="num">02</span>Minor — the two-day path</h2>
+  <p class="lede">Rest, check in, and either close it or escalate it. No drifting.</p>
+  <div class="card minor">
+    <ol class="steps">
+      <li><b>File the report the same day.</b> A follow-up pulse lands in your branch board Inbox within seconds, named for the injured person, so your branch has its own record of it.</li>
+      <li><b>Give them up to two calendar days of rest and recovery</b> — off the schedule. Up to; not automatically the full window. <b>Two calendar days after the day the injury is reported.</b> Reported Tuesday → the decision is due by end of Thursday. Calendar days, not scheduled shifts, so it does not matter how many times they were on the schedule in between.</li>
+      <li><b>The Minor designation alerts Employee Experience to put them on leave in Rippling.</b> That pauses their functions — they <b>cannot work</b> during the rest period. You do not have to request it; filing the report is what triggers it.</li>
+      <li><b>Check in with them.</b> You only need <b>verbal confirmation</b> they are ready to come back. No note, no clearance form.</li>
+      <li><b>If they confirm at or inside the two days</b> → close the incident report. <b>Your confirmation is what gets them reactivated in Rippling</b> — Employee Experience turns them back on once you say they are good. Until you do that, they stay paused and cannot be scheduled.</li>
+      <li><b>If at the end of day two they are still in pain or still not ready</b> → this becomes <span class="tag c">CRITICAL</span>. See section 04.</li>
+    </ol>
+  </div>
+  <div class="card">
+    <p style="margin:0"><b>Why the window exists.</b> We were letting people sit out indefinitely on injuries nobody
+    had written down — bad for them, bad for the branch, and impossible to manage. Forty-eight hours is long enough
+    for a real strain to settle and short enough that we find out quickly when it is something more.
+    <b>The point of the window is the decision at the end of it</b>, not the rest itself.</p>
+  </div>
+</section>
+
+<section id="critical">
+  <h2><span class="num">03</span>Critical — the same-day path</h2>
+  <p class="lede">Care first, then the call to Anne, then the paperwork. And the Texas Mutual sentence, every time.</p>
+  <div class="card crit">
+    <ol class="steps">
+      <li><b>Take care of your person.</b> If it is an emergency, call for help before anything else.</li>
+      <li><b>Call Anne / Employee Experience right away — before they arrive.</b> We pre-authorize the visit.
+      Without it, the clinic calls the office mid-visit or can refuse to treat them. This is the step most worth
+      remembering on this page.</li>
+      <li><b>Send them to Concentra.</b> Default to Concentra wherever you can — it is in the WorkWell network and
+      it is the <b>only</b> place we can pre-authorize.</li>
+      <li>🔴 <b>Whoever transports them says it out loud at the desk:</b> <i>"This is a workers' compensation case
+      and it needs to be billed to Texas Mutual."</i> Say it at <b>every</b> facility — Concentra, another urgent
+      care, an ER. <b>This is the step that protects the employee when there is no pre-auth</b>, and there often
+      is not.</li>
+      <li><b>Fill out the form.</b> Same day, with what you know. A follow-up pulse lands in your branch board Inbox here too.</li>
+      <li><b>The workers' comp claim starts that day.</b> Employee Experience drives it from there.</li>
+    </ol>
+  </div>
+  <div class="card crit">
+    <h3>Coming back: "cleared WITHOUT restrictions" or they do not come back</h3>
+    <p><b>A medical report that says "cleared with restrictions" is not a clearance to work.</b> We do not offer
+    light duty, so there is nothing for a restricted person to come back to. Restricted means <b>not cleared for
+    our work.</b></p>
+    <p><b>They stay off the schedule until the paperwork says cleared WITHOUT restrictions.</b> That is the only
+    thing that puts them back on the schedule and moves them off the claim.</p>
+    <p><b>This is the one most likely to get read wrong.</b> A note that says "cleared" anywhere on it looks like
+    a green light, especially when you are short-handed and the person wants to work. Read the whole line. If the
+    word <i>restrictions</i> appears, they are not coming back yet — and putting them on the schedule anyway is how
+    a manageable claim becomes a much worse one.</p>
+    <p style="margin-bottom:0"><b>If you see a "Re-employability Program" or a light-duty role referenced in other
+    material, that is not in practice today.</b> It has not been finalised or confirmed. When it is real you will
+    get proper guidance on it — until then there is no modified-duty option to offer, and nothing changes about
+    the rule above.</p>
+  </div>
+
+  <div class="card">
+    <h3>Pre-authorization only exists at Concentra — read this before you need it</h3>
+    <p><b>Concentra is the only hub we have access to for pre-authorization.</b> Other urgent cares would prefer
+    one too, but we do not have access to those networks, so there is nothing to call ahead for. Concentra is also
+    inside the WorkWell network, which is why we prioritise getting people seen there.</p>
+    <p><b>After hours, the pre-auth question is usually moot</b> — Concentra is likely closed, so there is nothing
+    to authorize. <b>Do not delay care waiting on it.</b></p>
+    <p style="margin-bottom:0">What replaces it is the sentence above: <b>whoever is transporting the person
+    explicitly tells the facility it is a workers' comp case that bills Texas Mutual.</b> That is what makes the
+    visit chargeable to the carrier rather than landing on the employee, and it works at an ER or an after-hours
+    urgent care where a pre-auth was never possible. <i>(Anne Bosse, 9/24/2026.)</i></p>
+  </div>
+
+  <div class="card">
+    <h3>Where the report goes when you hit submit</h3>
+    <p>Both designations route the same way, automatically, within seconds:</p>
+    <ul class="tight">
+      <li><b>Employee Experience</b> gets it — they own the claim and the medical follow-up.</li>
+      <li><b>Your branch board Inbox</b> gets a follow-up pulse named for the injured person.</li>
+      <li><b>Your regional manager</b> sees it.</li>
+    </ul>
+    <p style="margin-bottom:0"><b>The branch pulse is deliberate.</b> If something stalls on the Employee Experience
+    side, your branch still has its own record to work from. Triage it like any other Inbox item — it arrives with
+    no owner and no due date on purpose, so it is yours to assign.</p>
+  </div>
+</section>
+
+<section id="escalate">
+  <h2><span class="num">04</span>When Minor becomes Critical</h2>
+  <div class="card">
+    <p>A Minor injury that has not resolved by the end of the two days <b>is reclassified Critical</b>. It is the same
+    process as section 03, just two days later:</p>
+    <ul class="tight">
+      <li><b>Tag Anne and your regional manager on the injury pulse on your branch board</b>, saying the injury is being upgraded to Critical. <b>You do not change the severity yourself</b> — we change it on the OSHA board.</li>
+      <li>Call Anne for the pre-authorization <i>before</i> they go.</li>
+      <li>Send them to Concentra.</li>
+      <li>The workers' comp claim starts <b>that day</b>.</li>
+    </ul>
+    <p style="margin-bottom:0">This is not a failure or a black mark — it is the system working. The two days told
+    us something a same-day guess could not.</p>
+  </div>
+</section>
+
+<section id="form">
+  <h2><span class="num">05</span>Filling out the form</h2>
+  <p class="lede"><a href="https://wkf.ms/4bd5vEY">wkf.ms/4bd5vEY</a> — ten required fields, about five minutes.</p>
+  <div class="card">
+    <h3>What it asks for</h3>
+    <div class="scroll"><table>
+      <thead><tr><th>Field</th><th>What we need</th></tr></thead>
+      <tbody>
+        <tr><td><b>Injury severity</b></td><td>Critical or Minor — the one question in section 01</td></tr>
+        <tr><td><b>Employee name</b></td><td>Legal first and last. No nicknames — this becomes a claim record</td></tr>
+        <tr><td><b>Branch</b></td><td>Routes the report to the right board</td></tr>
+        <tr><td><b>Date of injury</b></td><td>When it happened, not when you heard</td></tr>
+        <tr><td><b>Time of injury</b></td><td>A rough estimate is fine. Do not leave it blank</td></tr>
+        <tr><td><b>Body part(s)</b></td><td>Be specific, <b>including which side</b> — "low back, left side"</td></tr>
+        <tr><td><b>What happened</b></td><td>The one that matters. See below</td></tr>
+        <tr><td><b>Where it happened</b></td><td>Location name and address</td></tr>
+        <tr><td><b>Your name</b></td><td>Who filled it out</td></tr>
+        <tr><td><b>Today's date</b></td><td>Auto-fills</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Also fill these when they apply</h3>
+    <ul class="tight">
+      <li><b>First day absent</b> — if you are pulling them from the field because of the injury, this is <b>the day of the injury</b>.</li>
+      <li><b>Witnesses</b> — first and last name. Memories go fuzzy fast and witnesses leave the company.</li>
+    </ul>
+    <p style="margin-bottom:0"><b>Note that "which branch" and "your name" are two separate fields.</b> That is
+    deliberate — <b>any manager can file for any branch.</b> If you are the one who hears about it, you are the one
+    who files it, even if it is not your branch and not your crew.</p>
+  </div>
+
+  <div class="card">
+    <h3>The "what happened" box</h3>
+    <p>Write the events leading up to it, the actual injury, and why it happened. A year from now, when someone is
+    asking questions about this claim, this paragraph is the entire record. There is an example on the form itself.</p>
+    <p class="bad">Not enough — "Hurt his back lifting."</p>
+    <p class="good">Enough — "Employee was carrying a dresser down the customer's interior stairs with a co-pilot.
+    Four steps from the bottom the co-pilot lost his grip, the weight shifted onto the employee, and he felt a sharp
+    pull in his lower back on the left side. He stopped work immediately and told me within ten minutes."</p>
+    <p>The difference is not length. It is that the second one names <b>what led up to it</b>,
+    <b>who else was there</b>, <b>the specific injury and side</b>, and <b>when it was reported</b>.</p>
+    <p style="margin-bottom:0"><b>There is a direct payoff for writing it well.</b> Employee Experience files the
+    first injury report and the DW3 wage statement with Texas Mutual off what you wrote. In Anne's words: <i>"the
+    more detailed and complete the injury reporting form is, the less questions we have to ask you."</i> Five
+    extra minutes here is the difference between a clean handoff and a week of back-and-forth.</p>
+  </div>
+
+  <div class="card">
+    <h3>You do not need the whole story</h3>
+    <p style="margin-bottom:0">Submit what you know today. Employee Experience fills in the medical and
+    return-to-work details afterward. Waiting until you have everything is exactly the habit we are ending —
+    a complete report filed a week late is worth less than a partial one filed the same day.</p>
+  </div>
+</section>
+
+<section id="examples">
+  <h2><span class="num">06</span>Worked examples</h2>
+  <p class="lede">Real shapes, anonymized. The call is in bold.</p>
+  <div class="card">
+
+    <div class="ex">
+      <h4>1. The strain that resolves</h4>
+      <p>A mover tweaks his lower back loading a truck. Sore, walking fine, does not want to see anybody.</p>
+      <p class="call m">Minor.</p>
+      <p style="margin-bottom:0">Reported Tuesday, so the decision is due by end of Thursday. Off the schedule meanwhile. You call him
+      Thursday morning, he says he is good — close the report, back on the schedule.</p>
+    </div>
+
+    <div class="ex">
+      <h4>2. The strain that does not</h4>
+      <p>Same start. At the day-two check-in he says it is still bothering him and he does not want to lift.</p>
+      <p class="call c">Escalates to Critical.</p>
+      <p style="margin-bottom:0">Tag Anne and your RM on the branch pulse to upgrade it, call Anne for the pre-auth, send him to
+      Concentra. The workers' comp claim starts that day. Do not give him "another couple of days."</p>
+    </div>
+
+    <div class="ex">
+      <h4>3. The one that looks minor and isn't</h4>
+      <p>A mover clips his wrist hard with a dolly. It is sore but he finishes the job. That afternoon he goes to
+      Concentra to get it looked at.</p>
+      <p class="call c">Critical — from the start.</p>
+      <p style="margin-bottom:0"><b>He went to a facility the day of the injury.</b> It does not matter that it read
+      as a small thing in the moment. The claim should open that day, and Anne should have been called <i>before</i>
+      he went. This exact case happened, and it was logged as Minor. It is the most common way to get this wrong.</p>
+    </div>
+
+    <div class="ex">
+      <h4>4. The one that was already hurting</h4>
+      <p>A mover has been favoring his shoulder for a week. On a job he lifts wrong and it gets much worse.</p>
+      <p class="call m">Report it, and describe both.</p>
+      <p style="margin-bottom:0">Write the pre-existing complaint <i>and</i> the new incident in the "what happened"
+      box, plainly. <b>Do not decide which one caused it</b> — that is a medical and claims question, and guessing
+      at it in writing creates a problem for everyone. Your job is an accurate account.</p>
+    </div>
+
+    <div class="ex">
+      <h4>5. The one that does not get reported</h4>
+      <p>A mover cuts his hand on a box strap. He puts a bandaid on it and keeps working. He is on the schedule
+      tomorrow and has no issue with it.</p>
+      <p class="call m">No report.</p>
+      <p>You still ask: <i>"Is this going to limit your ability to work your next shift?"</i> He says no, and he
+      works the next day. <b>That is the end of it.</b> Filing here would take a healthy mover off the schedule for
+      two unpaid days over a bandaid.</p>
+      <p style="margin-bottom:0"><b>Same cut, different answer:</b> he says it is deep, his grip is weak, and he
+      does not want to lift tomorrow. <b>That is a report.</b> The injury did not change — his answer did, and his
+      answer is the thing that decides it.</p>
+    </div>
+
+    <div class="ex">
+      <h4>6. The late mention</h4>
+      <p>On Thursday a mover mentions his elbow has hurt since Monday's job.</p>
+      <p class="call m">File it Thursday.</p>
+      <p><b>Treat it exactly as if it happened today.</b> It gets the same urgency, the same form, the same two-day
+      window — the age of the injury does not discount it.</p>
+      <p><b>Date of injury = Monday. Date reported = Thursday.</b> The form has separate
+      fields for exactly this, and the gap between them is real information, not something to hide. Say so plainly
+      in the description — something like <i>"minor injury occurred a few days ago, was not reported at the time,
+      and the injury has since gotten worse."</i> That sentence is what makes the record make sense a year from
+      now.</p>
+      <p style="margin-bottom:0"><b>Note what makes this different from a call out:</b> he worked those days and
+      is telling you now. If instead he had said nothing and then <i>called out</i> Thursday because of Monday's
+      injury, <b>the absence is a call out</b> — see the FAQ. The injury still gets filed either way; it is the
+      missed shift that is treated differently.</p>
+    </div>
+
+    <div class="ex">
+      <h4>7. The emergency</h4>
+      <p>A mover falls off the back of the truck and cannot put weight on his ankle.</p>
+      <p class="call c">Critical. Care first, paperwork after.</p>
+      <p style="margin-bottom:0">Get him help — 911 if it warrants it. Then your BM, then your RM, then Anne. The
+      form gets filled out once he is being taken care of, not before.</p>
+    </div>
+
+  </div>
+</section>
+
+<section id="lanes">
+  <h2><span class="num">07</span>Who owns what</h2>
+  <div class="card">
+    <h3>You — the manager on duty</h3>
+    <ul class="tight">
+      <li>Make sure they are safe, and make the Minor / Critical call</li>
+      <li>Call Anne <b>before</b> sending anyone to urgent care</li>
+      <li>File the report the same day, with what you know</li>
+      <li>Run the two-day window on a Minor: rest, check in, close or escalate</li>
+      <li><b>Give Employee Experience the word when they are ready</b> — nobody comes off leave until you do</li>
+      <li><b>On a claim, do not schedule anyone back without "cleared without restrictions"</b> in writing —
+      "cleared with restrictions" is not a clearance</li>
+      <li>Cover the schedule — without pressuring anyone back early</li>
+      <li>Keep talking to them. Nobody should be sitting at home hearing nothing from us</li>
+      <li>Answer Employee Experience's follow-up questions fast. Slow answers are what make claims drag</li>
+    </ul>
+    <h3>Employee Experience (Anne)</h3>
+    <ul class="tight">
+      <li>Pre-authorizes the urgent care visit — that is why you call first</li>
+      <li><b>Puts the mover on leave in Rippling</b> when a Minor is filed, and <b>reactivates them once you confirm</b> they are ready</li>
+      <li>Owns the workers' comp claim end to end</li>
+      <li><b>Submits to Texas Mutual on your behalf</b> — the <b>first injury report</b> and the <b>DW3 wage
+      statement</b>. Completing the form is what hands that off; you do not file anything with the carrier
+      yourself</li>
+      <li>Fills in the medical and return-to-work detail on the report</li>
+      <li>Handles the carrier, the OSHA recordkeeping, and benefits questions</li>
+      <li>Guides restrictions and the return-to-work conversation</li>
+    </ul>
+    <h3>What happens on the pay side — and what to say when they ask</h3>
+    <ul class="tight">
+      <li><b>Temporary income benefits start after 7 days off</b>, at <b>up to 70% of average weekly wage</b>,
+      paid through <b>Texas Mutual</b> — not through us.</li>
+      <li><b>If they are out 15 or more days, backpay applies.</b></li>
+      <li><b>After about a month on the workers' comp program</b>, Anne or Jalissa takes over communication with
+      the injured employee directly.</li>
+    </ul>
+    <p style="margin-bottom:0"><b>You can tell them those three things.</b> Anything beyond it — their specific
+    amount, their specific dates, whether a given week is covered — <b>goes to Employee Experience.</b> Do not
+    estimate someone's benefit for them. <i>(Anne Bosse, 9/24/2026.)</i></p>
+  </div>
+
+  <div class="card">
+    <h3>Your Regional Manager</h3>
+    <ul class="tight">
+      <li>Gets told about every <b>reported</b> injury — the chain is team → management → leadership, every time</li>
+      <li>Is your partner on the day-two escalation call if you are unsure</li>
+      <li>Backs you on coverage so nobody feels pushed to come back early</li>
+      <li>Escalates when something is not moving</li>
+    </ul>
+  </div>
+</section>
+
+<section id="crew">
+  <h2><span class="num">08</span>What your crew needs to know</h2>
+  <p class="lede">None of this works if the crew does not tell you in the first place.</p>
+
+  <div class="card">
+    <h3>Deliver this out loud, not just on a board</h3>
+    <ul class="tight">
+      <li><b>At a huddle, once, to everybody</b> — and then again with every new hire during onboarding.</li>
+      <li><b>Say it yourself.</b> Pinning it to a wall does not do the job. The thing that makes someone speak up
+      is having heard their own manager say it is fine to.</li>
+      <li><b>The tone carries more than the words.</b> If a crew believes reporting an injury makes them a
+      problem, they will work through it and tell you in two weeks when it is worse. That is the outcome this
+      whole process exists to prevent.</li>
+      <li><b>The mechanics are deliberately not in the message.</b> Time off the schedule, the Rippling leave and
+      what is or is not paid get handled person by person, when it is actually happening. Put them in a broadcast
+      and a safety message starts reading like an offer.</li>
+      <li><b>The call-out line is the part to say clearly.</b> It is not a threat — it is the reason the same-day
+      ask is fair. We can only cover someone who told us.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>The message — as posted</h3>
+
+    <p><b>Hey team,</b></p>
+
+    <p>We have an updated policy and best practice around injuries and getting them reported. Here is what we
+    need from you.</p>
+
+    <p>If you have an injury that is serious enough that you can not work your next shift it needs to be
+    communicated the day of the injury. <b>DO NOT WAIT.</b></p>
+
+    <p><b>Tell your manager the day it happens.</b><br>
+    Not the next morning. The day it happens. That one step is what lets us get you covered and get you care —
+    we cannot do either for an injury nobody told us about.</p>
+
+    <p><b>This has always been our rule and it has not changed:</b> if you get hurt on the job, do not say
+    anything to a manager that day, and then call out the next day because of that injury — <b>it still counts
+    as a call out.</b> Communicating clearly to us when it happens is what changes that.</p>
+
+    <p>Management has guidelines for reporting and getting you taken care of: a report will be filed and
+    management will advise you on next steps as needed.</p>
+
+    <p><b>Critical injuries are obvious:</b> that instance will be communicated of course and we will get you to
+    a care facility right away so no need to worry. If it is an injury that is not critical but still serious
+    enough to limit your ability to work, then make sure that is communicated before end of day.</p>
+
+    <p><b>You do not get in trouble for reporting an injury.</b> The only thing that causes a problem is an
+    injury nobody knew about.</p>
+
+    <p style="margin-bottom:0">Of course, let us avoid injuries and take care of ourselves and each other out in
+    the field — but if something happens, communicate clearly to your management team.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <h2><span class="num">09</span>FAQ</h2>
+  <div class="card">
+
+    <details><summary>He got hurt yesterday, said nothing, and called out today because of it.</summary>
+    <p><b>It still counts as a call out.</b> That has always been our rule and it has not changed. Getting hurt on
+    the job does not retroactively excuse an absence that was never communicated — <b>telling us the day it
+    happens is the thing that changes it from a call out into a managed injury.</b></p>
+    <p><b>Two separate things, and do both:</b></p>
+    <ul class="tight">
+      <li><b>Attendance:</b> the absence is recorded as a call out, handled the way you handle any other.</li>
+      <li><b>The injury:</b> you still file the report now. An unreported injury does not become acceptable
+      because the reporting was late — see <i>"The late mention"</i> in section 06.</li>
+    </ul>
+    <p style="margin-bottom:0"><b>Say the rule out loud when it happens</b>, calmly, so the next one gets
+    reported on the day. The point is not to penalise the injury — it is that we cannot cover someone who did
+    not tell us.</p></details>
+
+    <details><summary>He mentioned something but says he's fine. Do I still file?</summary>
+    <p><b>Say this to him, out loud:</b></p>
+    <p><i>"If this is going to limit your ability to work your next shift, then I'm going to report it — and that
+    takes you off the schedule. If you're telling me you're good, then I'm expecting you to work like normal."</i></p>
+    <p><b>Then take his answer.</b> If it will cost him a shift — he needs off a task, off the schedule, or he is
+    favouring it — <b>file it.</b> If he says he is fine, he works like normal and <b>no report is needed.</b></p>
+    <p><b>A cut he puts a bandaid on and works through the next day is not a report.</b> That is the case this
+    process is deliberately not trying to capture.</p>
+    <p><b>Why it is phrased that way:</b> the call is his, not yours. You are not judging how bad the injury is —
+    you are making sure he knows what mentioning it means, so that if he needs something he says so, and if he
+    says he is good, he has said it knowing what that means.</p></details>
+
+    <details><summary>Do I need to know how bad it is before I file?</summary>
+    <p>No, and waiting to find out is the habit this replaces. File the same day with what you know. Employee
+    Experience fills in the rest.</p></details>
+
+    <details><summary>His doctor's note says "cleared with restrictions." Can he work?</summary>
+    <p><b>No.</b> We do not offer light duty, so there is no restricted work to give him. <b>"Cleared with
+    restrictions" means he is not cleared for our work.</b></p>
+    <p><b>He stays off the schedule until a report says "cleared WITHOUT restrictions."</b> That is the only
+    thing that returns him to the schedule and moves him off the claim.</p>
+    <p style="margin-bottom:0">Read the whole line before you act on it. A note with the word "cleared" on it
+    looks like a green light — especially when you are short-handed and he wants to work. If the word
+    <i>restrictions</i> is in there, he is not back yet.</p></details>
+
+    <details><summary>Does the same paperwork rule apply to a Minor two-day rest?</summary>
+    <p><b>No — those are two different paths.</b></p>
+    <ul class="tight">
+      <li><b>Minor, no facility visit:</b> verbal confirmation is all you need. No note, no form.</li>
+      <li><b>Anything on a claim, or anyone who was seen by a doctor:</b> written clearance, and it has to say
+      <b>without restrictions</b>.</li>
+    </ul>
+    <p style="margin-bottom:0">Do not start asking for paperwork on a two-day rest, and do not accept a verbal
+    "I am good" from someone who has been to a clinic.</p></details>
+
+    <details><summary>What does Employee Experience actually do once I have filed it?</summary>
+    <p><b>They take over the carrier side.</b> Once a member of branch leadership completes the injury reporting
+    form, Employee Experience submits to <b>Texas Mutual</b> — the <b>first injury report</b> and the <b>DW3
+    wage statement</b>. You do not file anything with the carrier yourself.</p>
+    <p>They also own the claim from there: the medical follow-up, restrictions, the return-to-work conversation,
+    and the OSHA recordkeeping.</p>
+    <p style="margin-bottom:0"><b>What they need from you is a complete form.</b> The detail you write is what
+    they submit — thin answers come back to you as questions. <i>(Anne Bosse, 9/24/2026.)</i></p></details>
+
+    <details><summary>Does filing the form count as telling Anne?</summary>
+    <p>For a Minor, the report is the notification. <b>For a Critical, no — call her.</b> The pre-authorization has to
+    happen before the person gets to urgent care, and a form submission is not a phone call.</p></details>
+
+    <details><summary>What if it happens on a weekend or after hours?</summary>
+    <p><b>Weekends are normal working days for this.</b> We usually have managers on over the weekend, and
+    <b>any manager can fill out the form for any branch</b> — you do not have to be that mover's manager, or even
+    at that branch. The form asks which branch separately from who is filling it out. So file it; do not hold it
+    for Monday and do not go hunting for the "right" person.</p>
+    <p><b>After hours and Critical is the one exception.</b> Get the team member to the care facility they need
+    and get it handled. Then fill out the form the next day when you are back in the office. <b>Care first — do
+    not let paperwork, or not being able to reach anyone, slow down getting them seen.</b></p>
+    <p><b>There is no after-hours pre-authorization to chase</b> — pre-auth exists at Concentra only, and after
+    hours Concentra is likely closed. Instead: <b>whoever takes them says at the desk that it is a workers' comp
+    case billed to Texas Mutual.</b> That sentence is what protects them. Tell Anne as soon as you can reach
+    her.</p></details>
+
+    <details><summary>Concentra is closed or too far. Can they go somewhere else?</summary>
+    <p><b>Yes — get them care.</b> Concentra is the default because it is in the WorkWell network and the only
+    place we can pre-authorize, but a closed clinic is not a reason to delay treatment.</p>
+    <p><b>At any other facility, the sentence does the work:</b> whoever transports them tells the desk
+    <i>"this is a workers' compensation case and it needs to be billed to Texas Mutual."</i> There is no pre-auth
+    to arrange at those places — we do not have access to their networks — so saying it explicitly is the whole
+    protection.</p>
+    <p style="margin-bottom:0">Then tell Anne as soon as you can reach her.</p></details>
+
+    <details><summary>Can they go to their own doctor instead of Concentra?</summary>
+    <p><b>Not first.</b> They need to be seen at one of our in-network facilities associated with our workers'
+    compensation coverage.</p>
+    <p>A second opinion is allowed — but <b>only after</b> they have been seen by our workers' comp doctors.
+    Their own physician is not the first stop.</p></details>
+
+    <details><summary>What if the employee refuses treatment?</summary>
+    <p><b>If the injury is keeping them off the schedule, refusing treatment is not an option we can accept.</b></p>
+    <p>The reason is not paperwork. An injury that goes unchecked can develop into something worse, and an
+    undocumented one leaves the employee without the protection the claim exists to give them. If they are hurt
+    enough not to work, they are hurt enough to be seen.</p>
+    <p>If someone pushes back, <b>do not negotiate it on your own</b> — call your RM and Anne the same day, and
+    write in the report that treatment was offered and declined.</p></details>
+
+    <details><summary>Are the rest days paid?</summary>
+    <p><b>No.</b> Rest days outside a workers' comp claim are not paid days.</p>
+    <p>If it escalates to Critical and a claim opens, wage replacement is handled through the claim and
+    Employee Experience runs it. Route any pay question to them rather than answering it yourself.</p></details>
+
+    <details><summary>How long exactly is the rest window, and when does it start?</summary>
+    <p><b>Two calendar days after the day the injury is reported.</b> Reported Monday → the decision is due by end
+    of Wednesday.</p>
+    <p>Calendar days, not scheduled shifts — it does not matter how many times they were on the schedule in
+    between. A report that comes in late in the afternoon still gets both full days.</p></details>
+
+    <details><summary>He already went to Concentra before telling me. Minor or Critical?</summary>
+    <p><b>Critical.</b> The question is whether he went to a facility on the day of the injury, not whether you
+    were the one who sent him. Tell Anne immediately — the visit was not pre-authorized.</p></details>
+
+    <details><summary>I already filed it as Minor and it turned out to be worse.</summary>
+    <p><b>Tag Anne and your regional manager on the injury pulse on your branch board</b> and say the injury is
+    being upgraded to Critical. <b>We change it on the OSHA board</b> — you do not need to go edit the record
+    yourself.</p>
+    <p>It works the same the other way. <b>If you marked it Critical and it turns out to be Minor, do exactly the
+    same thing</b> and we will change it.</p>
+    <p>Either direction is the designed path, not a mistake. Getting the designation wrong at first is expected;
+    leaving it wrong is the only real error.</p></details>
+
+    <details><summary>Is there such a thing as an injury I note but do not file?</summary>
+    <p><b>No. That category is gone.</b> There are no near misses, no injury notes, no "I'll keep an eye on it."</p>
+    <p><b>Once someone tells you an injury will keep them from working their next shift, you file it. No matter
+    what.</b> There is no version where you note it, watch it, and decide later. That judgment call is not yours
+    and it no longer exists.</p>
+    <p>That is different from a passing mention — see <i>"He mentioned something but says he's fine"</i> above. The
+    dividing line is his answer, not your read of how bad it looks.</p>
+    <p>And if someone gets hurt and never tells management at all, we cannot act on it and it goes on as is.</p></details>
+
+  </div>
+</section>
+
+<section id="dont">
+  <h2><span class="num">10</span>What not to do</h2>
+  <div class="card crit">
+    <ul class="tight">
+      <li><b>Do not wait to file</b> until you have the full story, a diagnosis, or a quiet moment.</li>
+      <li><b>Do not send anyone to urgent care without calling Anne first.</b></li>
+      <li><b>Do not decide what caused an injury</b> in writing — describe what happened and let the medical and
+      claims side do their work.</li>
+      <li><b>Do not let a Minor drift past the two days</b> without a decision. Drifting is the thing this replaces — and it now has a cost attached: they are paused in Rippling until you confirm, so a check-in you forget is someone sitting at home unable to work and unpaid.</li>
+      <li><b>Do not talk anyone out of reporting</b> once they have told you it will cost them a shift. Asking the
+      question is not the same as arguing them down from the answer.</li>
+      <li><b>Do not put anyone back on the schedule on a "cleared with restrictions" note.</b> That is not a
+      clearance — we have no light duty to give them. It has to say <b>without</b> restrictions.</li>
+      <li><b>Do not promise anything about pay, benefits, or time off.</b> Route it to Employee Experience.</li>
+      <li><b>Do not use nicknames</b> on the form. It becomes a claim record.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="open">
+  <h2><span class="num">11</span>Still being decided</h2>
+  <p class="lede">Listed openly so nobody plans against an answer that does not exist yet.</p>
+  <div class="card open">
+    <ul class="tight">
+      <li><b>The rest-period length is stated two ways.</b> This guide says <b>two calendar days</b> for a Minor.
+      Anne's 9/24 posting says <b>pull from schedule for 3 days</b> for first-aid-only. Follow the two days here
+      until it is reconciled.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p><b>Injury Reporting — Manager Guide.</b> Published 9/21/2026. Companion to the Delegation Board pulse
+  “🚨 Injury Reporting — Updated/Current Process.”</p>
+  <p>Supersedes the 6/2/2025 “On the Job Injury &amp; Workers' Compensation Process” posting in full.
+  Process owner: Brian Herzig (Regional Manager, CTXH). Claims and workers' comp: Anne Bosse
+  (Director of Employee Experience). Questions about a specific injury go to Employee Experience, not to this page.</p>
+  <p style="margin-bottom:0">Internal reference. Not for distribution outside Einstein Moving.</p>
+</footer>
+
+</div>
+
+</body>
+</html>
